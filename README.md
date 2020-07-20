@@ -4,25 +4,25 @@ The repository provides insights on a simple use case of Customer Churn Analysis
 
 The below is the schema of the dataset as read by spark:
 
->root
-> |-- churn: string (nullable = true)
-> |-- accountlength: integer (nullable = true)
-> |-- internationalplan: string (nullable = true)
-> |-- voicemailplan: string (nullable = true)
-> |-- numbervmailmessages: integer (nullable = true)
-> |-- totaldayminutes: double (nullable = true)
-> |-- totaldaycalls: integer (nullable = true)
-> |-- totaldaycharge: double (nullable = true)
-> |-- totaleveminutes: double (nullable = true)
-> |-- totalevecalls: integer (nullable = true)
-> |-- totalevecharge: double (nullable = true)
-> |-- totalnightminutes: double (nullable = true)
-> |-- totalnightcalls: integer (nullable = true)
-> |-- totalnightcharge: double (nullable = true)
-> |-- totalintlminutes: double (nullable = true)
-> |-- totalintlcalls: integer (nullable = true)
-> |-- totalintlcharge: double (nullable = true)
-> |-- numbercustomerservicecalls: integer (nullable = true)
+>root                                                          \n
+> |-- churn: string (nullable = true)                          \n
+> |-- accountlength: integer (nullable = true)                 \n
+> |-- internationalplan: string (nullable = true)              \n
+> |-- voicemailplan: string (nullable = true)                  \n
+> |-- numbervmailmessages: integer (nullable = true)           \n
+> |-- totaldayminutes: double (nullable = true)                \n
+> |-- totaldaycalls: integer (nullable = true)                 \n
+> |-- totaldaycharge: double (nullable = true)                 \n
+> |-- totaleveminutes: double (nullable = true)                \n
+> |-- totalevecalls: integer (nullable = true)                 \n
+> |-- totalevecharge: double (nullable = true)                 \n
+> |-- totalnightminutes: double (nullable = true)              \n
+> |-- totalnightcalls: integer (nullable = true)               \n
+> |-- totalnightcharge: double (nullable = true)               \n
+> |-- totalintlminutes: double (nullable = true)               \n
+> |-- totalintlcalls: integer (nullable = true)                \n
+> |-- totalintlcharge: double (nullable = true)                \n
+> |-- numbercustomerservicecalls: integer (nullable = true)    \n
 
 As we could see, most of the predictor variables are numeric and some are of categorical nature. Spark did not have any issue infering the schema for this dataset as the dataset is provided in a csv format. We often run into situations where spark might read majority of the variables as string, due to the values in the input data. I have covered what we can do in such situation as part of the code Notebook. 
 
