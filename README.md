@@ -4,7 +4,7 @@ The repository provides insights on a simple use case of Customer Churn Analysis
 
 The below is the schema of the dataset as read by spark:
 
-root
+>root
  |-- churn: string (nullable = true)
  |-- accountlength: integer (nullable = true)
  |-- internationalplan: string (nullable = true)
