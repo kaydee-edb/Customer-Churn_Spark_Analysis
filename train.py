@@ -116,7 +116,8 @@ def pipeline_preprocess(inp_df):
     
     stages += [label_Idx]
 
-    # Create the last stage which would be vector assembler
+    # Create the vector assembler stage to assemble data into labels
+    # and features
     numeric_cols = num_cols.copy()
     numeric_cols.remove("accountlength")
     numeric_cols.append("acctlen_bin")
@@ -144,9 +145,6 @@ def train_routine(file_path):
     """ 
     Fit a Logistic regression model on the training data
     """
-    #split data into training and validation
-    (train_df, val_df) = df.randomSplit([0.8, 0.2], 24)
-
     #Initiate a logistic regression object
     lr = LogisticRegression(maxIter=100)
 
@@ -156,13 +154,11 @@ def train_routine(file_path):
                 .build())
 
     #Train the crossvalidator
-
-
     cv = CrossValidator(estimator = Pipeline(stages = [lr]),
             estimatorParamMaps=paramgrid,
             evaluator=BinaryClassificationEvaluator(rawPredictionCol="prediction"), 
             numFolds=5)
-    cv_model = cv.fit(train_df)
+    cv_model = cv.fit(df)
 
     #Save the best model 
     cv_model.bestModel.write().overwrite().save("./output/model")
