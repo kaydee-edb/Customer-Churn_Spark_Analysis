@@ -9,9 +9,9 @@ from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
 from pyspark.sql.types import *
 from pyspark.ml.classification import LogisticRegression
-from pyspark.ml.feature import (OneHotEncoderEstimator, StringIndexer, Imputer, 
-                                VectorAssembler, SQLTransformer,
-                                QuantileDiscretizer)
+from pyspark.ml.feature import (OneHotEncoderEstimator, StringIndexer,
+                                Imputer, VectorAssembler, 
+                                SQLTransformer, QuantileDiscretizer)
 from pyspark.ml.evaluation import BinaryClassificationEvaluator
 from pyspark.mllib.evaluation import BinaryClassificationMetrics
 from pyspark.ml.tuning import (CrossValidator, CrossValidatorModel, 
@@ -19,9 +19,11 @@ from pyspark.ml.tuning import (CrossValidator, CrossValidatorModel,
 from pyspark.ml import Pipeline, PipelineModel
 from pyspark.ml.linalg import Vectors
 
+#Create SparkSession instance for the run
+spark = SparkSession.builder.appName('Churn').getOrCreate()
+
 #Create separate lists of all the variables which can be used in the 
 #model. Also, best to separate numeric and categorical variables
-
 label = "churn"
 all_cols = ['churn', 'accountlength', 'internationalplan', 
             'voicemailplan', 'numbervmailmessages', 'totaldayminutes', 
@@ -32,6 +34,12 @@ all_cols = ['churn', 'accountlength', 'internationalplan',
             'numbercustomerservicecalls']
 cat_cols = ['internationalplan', 'voicemailplan']
 num_cols = list(set(all_cols) - set(cat_cols) - set([label]))
+
+""" 
+The below are the function definitions which will be called from the 
+main logic below. These functions will allow us to reuse them as part
+of the scoring script.
+"""
 
 # load Data Function 
 def loadData(path):
@@ -122,48 +130,50 @@ def pipeline_preprocess(inp_df):
 
     return data_preprocess
 
+def train_routine(file_path):
 
-#Create SparkSession instance for the run
-spark = SparkSession.builder.appName('Churn').getOrCreate()
+    # load the dataset from the path
+    df = loadData(file_path)
 
+    pre_process = pipeline_preprocess(df)
+    df = pre_process.transform(df)
 
+    # Save the preprocess model
+    pre_process.write().overwrite().save("./output/preprocess")
 
-# Create a path variable which would hold the Input data location
-file_path = "./input/train/churn.csv"
+    """ 
+    Fit a Logistic regression model on the training data
+    """
+    #split data into training and validation
+    (train_df, val_df) = df.randomSplit([0.8, 0.2], 24)
 
-# load the dataset from the path
-df = loadData(file_path)
+    #Initiate a logistic regression object
+    lr = LogisticRegression(maxIter=100)
 
-pre_process = pipeline_preprocess(df)
-df = pre_process.transform(df)
+    #Create a paramgrid for Cross Validation
+    paramgrid = (ParamGridBuilder()
+                .addGrid(lr.regParam,[0.1, 0.01])
+                .build())
 
-# Save the preprocess model
-pre_process.write().overwrite().save("./output/preprocess")
-
-""" 
-Fit a Logistic regression model on the training data
-"""
-#split data into training and validation
-(train_df, val_df) = df.randomSplit([0.8, 0.2], 24)
-
-#Initiate a logistic regression object
-lr = LogisticRegression(maxIter=100)
-
-#Create a paramgrid for Cross Validation
-paramgrid = (ParamGridBuilder()
-            .addGrid(lr.regParam,[0.1, 0.01])
-            .build())
-
-#Train the crossvalidator
+    #Train the crossvalidator
 
 
-cv = CrossValidator(estimator = Pipeline(stages = [lr]),
-        estimatorParamMaps=paramgrid,
-        evaluator=BinaryClassificationEvaluator(rawPredictionCol="prediction"), 
-        numFolds=5)
-cv_model = cv.fit(train_df)
+    cv = CrossValidator(estimator = Pipeline(stages = [lr]),
+            estimatorParamMaps=paramgrid,
+            evaluator=BinaryClassificationEvaluator(rawPredictionCol="prediction"), 
+            numFolds=5)
+    cv_model = cv.fit(train_df)
 
-#Save the best model 
-cv_model.bestModel.write().overwrite().save("./output/model")
+    #Save the best model 
+    cv_model.bestModel.write().overwrite().save("./output/model")
+
+if __name__ == "__main__":
+
+    # Create a path variable which would hold the Input data location
+    file_path = "./input/train/churn.csv"
+
+    train_routine(path)
+
+    print("Pipeline Model has been Saved")
 
 

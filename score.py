@@ -19,6 +19,7 @@ from pyspark.ml.tuning import (CrossValidator, CrossValidatorModel,
                                ParamGridBuilder)
 from pyspark.ml import Pipeline, PipelineModel
 from pyspark.ml.linalg import Vectors
+from time import ctime
 from train import loadData, numImpute, catImpute
 
 #Create SparkSession instance for the run
@@ -42,5 +43,5 @@ preds_labels = cvModel.transform(df)
 
 #Save the preds_lables df into the path specified in the json format
 preds_labels.write.format('json') \
-            .save("./output/results")
+            .save("./output/results/" + ctime())
 
