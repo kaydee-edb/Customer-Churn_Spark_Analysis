@@ -170,7 +170,7 @@ def train_routine(file_path):
 if __name__ == "__main__":
 
     # Create a path variable which would hold the Input data location
-    file_path = "./input/train/churn.csv"
+    path = "./input/train/churn.csv"
 
     train_routine(path)
 
