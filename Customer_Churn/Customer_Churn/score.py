@@ -8,15 +8,6 @@ cater new requests.
 
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
-from pyspark.sql.types import *
-from pyspark.ml.classification import LogisticRegression
-from pyspark.ml.feature import (OneHotEncoderEstimator, StringIndexer, Imputer, 
-                                VectorAssembler, SQLTransformer,
-                                QuantileDiscretizer)
-from pyspark.ml.evaluation import BinaryClassificationEvaluator
-from pyspark.mllib.evaluation import BinaryClassificationMetrics
-from pyspark.ml.tuning import (CrossValidator, CrossValidatorModel, 
-                               ParamGridBuilder)
 from pyspark.ml import Pipeline, PipelineModel
 from pyspark.ml.linalg import Vectors
 from time import ctime
