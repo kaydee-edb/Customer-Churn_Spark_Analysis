@@ -21,9 +21,10 @@ from pyspark.ml import Pipeline, PipelineModel
 from pyspark.ml.linalg import Vectors
 from time import ctime
 from train import loadData, numImpute, catImpute
+from spark import get_spark
 
 #Create SparkSession instance for the run
-spark = SparkSession.builder.appName('Score').getOrCreate()
+spark = get_spark()
 
 #Load the input Path
 path = "./input/test/test.csv"

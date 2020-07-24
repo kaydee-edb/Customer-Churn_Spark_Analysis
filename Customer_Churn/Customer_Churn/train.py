@@ -18,9 +18,10 @@ from pyspark.ml.tuning import (CrossValidator, CrossValidatorModel,
                                ParamGridBuilder)
 from pyspark.ml import Pipeline, PipelineModel
 from pyspark.ml.linalg import Vectors
+from spark import get_spark 
 
 #Create SparkSession instance for the run
-spark = SparkSession.builder.appName('Churn').getOrCreate()
+spark = get_spark()
 
 #Create separate lists of all the variables which can be used in the 
 #model. Also, best to separate numeric and categorical variables
